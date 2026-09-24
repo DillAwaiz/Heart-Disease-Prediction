@@ -48,15 +48,6 @@ MODEL_FILES = {
     "XGBoost": "xgboost.pkl",
 }
 
-# XGBoost is needed for local training, but it is not loaded by Vercel's
-# serverless runtime so the deployment does not need the training stack.
-RUNTIME_MODEL_FILES = (
-    {name: filename for name, filename in MODEL_FILES.items()
-     if name != "XGBoost"}
-    if os.environ.get("VERCEL")
-    else MODEL_FILES.copy()
-)
-
 # Labels for the 1-3 clinical scale used by cholesterol and glucose
 LEVEL_LABELS = {1: "Normal", 2: "Above Normal", 3: "Well Above Normal"}
 
@@ -95,7 +86,7 @@ def init():
         return
 
     # -- all the trained models --
-    for name, filename in RUNTIME_MODEL_FILES.items():
+    for name, filename in MODEL_FILES.items():
         try:
             with open(os.path.join(MODELS_DIR, filename), "rb") as f:
                 _models[name] = pickle.load(f)
