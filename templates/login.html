@@ -1,0 +1,59 @@
+{% import "_icons.html" as icons %}
+{% extends "base.html" %}
+{% block title %}Sign In &mdash; Heart Disease Prediction{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+
+  <!-- Left: heart illustration with the project name -->
+  <div class="auth-visual auth-visual--minimal"
+       data-bg-url="{{ url_for('static', filename='img/heart_bg.png') }}">
+    <div class="auth-visual-brand">
+      <div class="auth-visual-mark">{{ icons.icon('heart') }}</div>
+      <div>
+        <div class="auth-visual-name">Heart Disease Prediction</div>
+        <div class="auth-visual-sub">Flask + Machine Learning</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: the sign-in form -->
+  <div class="auth-form-side">
+    <h1 class="auth-heading">Login</h1>
+    <p class="auth-lead">Sign in to access your cardiovascular risk portal.</p>
+
+    <form method="post" action="{{ url_for('login') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="auth-field">
+        <label for="username">Username <span class="req">*</span></label>
+        <input type="text" id="username" name="username"
+               placeholder="Enter your username" required autofocus
+               autocomplete="username">
+      </div>
+
+      <div class="auth-field">
+        <label for="password">Password <span class="req">*</span></label>
+        <input type="password" id="password" name="password"
+               placeholder="Enter your password" required
+               autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="auth-btn">Login</button>
+    </form>
+
+    <div class="auth-divider">New here</div>
+
+    <div class="auth-links">
+      <span class="muted">Don't have an account?</span>
+      <a href="{{ url_for('register') }}">Create one</a>
+    </div>
+
+    <div class="auth-note">
+      <strong>Screening tool &mdash; not a medical diagnosis.</strong>
+      Always consult a qualified doctor before acting on any result.
+    </div>
+  </div>
+</div>
+{% endblock %}

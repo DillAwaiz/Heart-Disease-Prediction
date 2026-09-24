@@ -1,0 +1,42 @@
+{# ────────────────────────────────────────────────────────────────
+   Inline SVG icon set - one small stroke icon per term.
+   Usage in any template:  {% import "_icons.html" as icons %}
+                           {{ icons.icon('dashboard') }}
+   Colour and size come from CSS (.nav-icon, .title-icon, ...).
+   ──────────────────────────────────────────────────────────────── #}
+
+{% macro icon(name, cls='nav-icon') -%}
+<svg class="{{ cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  {%- if name == 'dashboard' -%}
+    <rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/>
+    <rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>
+  {%- elif name == 'pulse' -%}
+    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+  {%- elif name == 'history' -%}
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  {%- elif name == 'users' -%}
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  {%- elif name == 'clipboard' -%}
+    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+    <rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/>
+  {%- elif name == 'chart' -%}
+    <path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/>
+    <rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/>
+  {%- elif name == 'user' -%}
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+  {%- elif name == 'logout' -%}
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+  {%- elif name == 'heart' -%}
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+  {%- elif name == 'check' -%}
+    <path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="M22 4L12 14l-3-3"/>
+  {%- elif name == 'alert' -%}
+    <path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
+    <path d="M12 9v4"/><path d="M12 17h.01"/>
+  {%- elif name == 'shield' -%}
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  {%- endif -%}
+</svg>
+{%- endmacro %}

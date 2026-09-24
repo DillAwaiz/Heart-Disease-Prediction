@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Forbidden{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="error-code">403</div>
+  <div class="error-title">Access Denied</div>
+  <div class="error-text">You are signed in, but your role does not have permission to view this page.</div>
+  <a href="{{ url_for('index') }}" class="btn">Back to Home</a>
+</div>
+{% endblock %}

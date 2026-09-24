@@ -1,0 +1,107 @@
+{% import "_icons.html" as icons %}
+{% extends "base.html" %}
+{% block title %}Dashboard &mdash; Heart Disease Prediction{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ icons.icon('dashboard', 'title-icon') }}Dashboard</h1>
+<p class="page-subtitle">Welcome back, {{ current_user.fullname or current_user.username }}.</p>
+<hr class="divider">
+
+{% if not engine_ready %}
+  <div class="alert alert-warning">
+    No trained model is loaded, so new assessments cannot run.
+    Run <code>python train_model.py</code> and restart the application.
+  </div>
+{% endif %}
+
+<!-- KPI cards -->
+<div class="kpi-wrap">
+  <div class="kpi-card">
+    <div class="kpi-val">{{ total }}</div>
+    <div class="kpi-lbl">My Assessments</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">{{ high }}</div>
+    <div class="kpi-lbl">High Risk</div>
+  </div>
+  <div class="kpi-card k-green">
+    <div class="kpi-val">{{ low }}</div>
+    <div class="kpi-lbl">Low Risk</div>
+  </div>
+  {% if last %}
+    <div class="kpi-card {% if last.predicted_class == 0 %}k-green{% endif %}">
+      <div class="kpi-val">{{ '%.0f'|format(last.probability * 100) }}%</div>
+      <div class="kpi-lbl">Last Result</div>
+    </div>
+  {% endif %}
+  {% if best_accuracy %}
+    <div class="kpi-card k-violet">
+      <div class="kpi-val">{{ '%.1f'|format(best_accuracy * 100) }}%</div>
+      <div class="kpi-lbl">Model Accuracy ({{ best_model }})</div>
+    </div>
+  {% endif %}
+</div>
+
+<div class="grid grid-2">
+
+  <!-- Recent assessments -->
+  <div class="panel">
+    <div class="panel-title">Recent Assessments</div>
+    {% if predictions %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th class="num">Risk</th><th>Verdict</th></tr></thead>
+          <tbody>
+            {% for p in predictions %}
+              <tr>
+                <td class="text-sm">{{ p.timestamp[:16] }}</td>
+                <td class="num">{{ '%.1f'|format(p.probability * 100) }}%</td>
+                <td>
+                  {% if p.predicted_class == 1 %}
+                    <span class="badge badge-red">High</span>
+                  {% else %}
+                    <span class="badge badge-green">Low</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-2">
+        <a href="{{ url_for('history') }}" class="btn btn-sm btn-grey">View all</a>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">{{ icons.icon('heart') }}</div>
+        <div class="empty-title">No assessments yet</div>
+        <div class="empty-text">Run your first risk assessment and it will appear here.</div>
+        <div class="mt-2">
+          <a href="{{ url_for('diagnosis_form') }}" class="btn">Start an Assessment</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Risk trend chart -->
+  <div class="panel">
+    <div class="panel-title">Risk Trend</div>
+    {% if trend and trend|length > 1 %}
+      <div class="chart-box"><canvas id="trendChart"></canvas></div>
+      <script type="application/json" id="trendData">{{ trend|tojson }}</script>
+    {% else %}
+      <div class="empty-state" style="padding:30px 16px;">
+        <div class="empty-text">At least two assessments are needed before a trend can be drawn.</div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if trend and trend|length > 1 %}
+  <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+  <script>HDPCharts.riskTrend('trendChart', 'trendData');</script>
+{% endif %}
+{% endblock %}

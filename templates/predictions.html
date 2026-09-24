@@ -1,0 +1,75 @@
+{% import "_icons.html" as icons %}
+{% extends "base.html" %}
+{% block title %}All Predictions &mdash; Heart Disease Prediction{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ icons.icon('clipboard', 'title-icon') }}All Predictions</h1>
+<p class="page-subtitle">{{ rows|length }} saved assessment{{ '' if rows|length == 1 else 's' }} across all accounts.</p>
+<hr class="divider">
+
+{% if rows %}
+  <form method="get" class="filter-bar">
+    <div class="field">
+      <label for="verdict">Verdict</label>
+      <select id="verdict" name="verdict">
+        <option value="all"  {% if verdict == 'all'  %}selected{% endif %}>All</option>
+        <option value="high" {% if verdict == 'high' %}selected{% endif %}>High Risk</option>
+        <option value="low"  {% if verdict == 'low'  %}selected{% endif %}>Low Risk</option>
+      </select>
+    </div>
+    <div class="field">
+      <button type="submit" class="btn btn-sm">Apply</button>
+    </div>
+    <div class="field">
+      <a href="{{ url_for('admin_predictions') }}" class="btn btn-sm btn-grey">Reset</a>
+    </div>
+  </form>
+
+  <div class="panel">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Account</th><th class="num">Age</th><th class="num">BP</th>
+            <th class="num">Risk</th><th>Verdict</th><th>Model</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              <td class="text-sm">{{ r.timestamp[:16] }}</td>
+              <td>{{ r.account }}</td>
+              <td class="num">{{ r.age|int }}</td>
+              <td class="num text-sm">{{ r.ap_hi|int }}/{{ r.ap_lo|int }}</td>
+              <td class="num"><strong>{{ '%.1f'|format(r.probability * 100) }}%</strong></td>
+              <td>
+                {% if r.risk.label == 'HIGH RISK' %}
+                  <span class="badge badge-red">High</span>
+                {% else %}
+                  <span class="badge badge-green">Low</span>
+                {% endif %}
+              </td>
+              <td class="text-sm text-muted">{{ r.model_used }}</td>
+              <td>
+                <form method="post"
+                      action="{{ url_for('admin_delete_prediction', pred_id=r.id) }}"
+                      class="inline-form"
+                      data-confirm="Delete this prediction record?">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">{{ icons.icon('clipboard') }}</div>
+    <div class="empty-title">No predictions yet</div>
+    <div class="empty-text">Records appear here as soon as users run assessments.</div>
+  </div>
+{% endif %}
+{% endblock %}

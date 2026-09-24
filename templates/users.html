@@ -1,0 +1,75 @@
+{% import "_icons.html" as icons %}
+{% extends "base.html" %}
+{% block title %}Users &mdash; Heart Disease Prediction{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ icons.icon('users', 'title-icon') }}User Management</h1>
+<p class="page-subtitle">{{ rows|length }} registered account{{ '' if rows|length == 1 else 's' }}.</p>
+<hr class="divider">
+
+<div class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Username</th><th>Full Name</th><th>Email</th>
+          <th>Role</th><th class="num">Assessments</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in rows %}
+          <tr>
+            <td class="num">{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.fullname or '&mdash;'|safe }}</td>
+            <td class="text-sm">{{ u.email or '&mdash;'|safe }}</td>
+            <td>
+              <form method="post" action="{{ url_for('admin_change_role', user_id=u.id) }}"
+                    class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select name="role" class="text-sm">
+                  {% for role in [ROLE_PATIENT, ROLE_ADMIN] %}
+                    <option value="{{ role }}" {% if u.role == role %}selected{% endif %}>{{ role }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-sm btn-grey">Set</button>
+              </form>
+            </td>
+            <td class="num">{{ u.count }}</td>
+            <td>
+              {% if u.is_banned %}
+                <span class="badge badge-red">Suspended</span>
+              {% else %}
+                <span class="badge badge-green">Active</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="btn-row">
+                <form method="post" action="{{ url_for('admin_ban', user_id=u.id) }}"
+                      class="inline-form">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  {% if u.is_banned %}
+                    <button type="submit" class="btn btn-sm btn-green">Reinstate</button>
+                  {% else %}
+                    <button type="submit" class="btn btn-sm btn-grey">Suspend</button>
+                  {% endif %}
+                </form>
+                <form method="post" action="{{ url_for('admin_delete_user', user_id=u.id) }}"
+                      class="inline-form"
+                      data-confirm="Permanently delete this account and all of its predictions?">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="text-sm text-muted mt-1">
+    Safety rules: you cannot act on your own account, and the last active
+    administrator cannot be suspended, demoted or deleted.
+  </div>
+</div>
+{% endblock %}

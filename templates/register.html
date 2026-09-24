@@ -1,0 +1,97 @@
+{% import "_icons.html" as icons %}
+{% extends "base.html" %}
+{% block title %}Create Account &mdash; Heart Disease Prediction{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+
+  <!-- Left: heart illustration with the project name -->
+  <div class="auth-visual auth-visual--minimal"
+       data-bg-url="{{ url_for('static', filename='img/heart_bg.png') }}">
+    <div class="auth-visual-brand">
+      <div class="auth-visual-mark">{{ icons.icon('heart') }}</div>
+      <div>
+        <div class="auth-visual-name">Heart Disease Prediction</div>
+        <div class="auth-visual-sub">Flask + Machine Learning</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: the sign-up form. Accounts created here are always Patients. -->
+  <div class="auth-form-side">
+    <h1 class="auth-heading">Create Account</h1>
+    <p class="auth-lead">
+      Register as a patient to check your cardiovascular risk.
+    </p>
+
+    <form method="post" action="{{ url_for('register') }}" id="registerForm" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="auth-field">
+        <label for="username">Username <span class="req">*</span></label>
+        <input type="text" id="username" name="username"
+               value="{{ form.username or '' }}"
+               placeholder="Choose a username" required autofocus minlength="3">
+        <div class="field-error" data-error-for="username"></div>
+        <div class="hint">3&ndash;20 characters. Letters, numbers and underscores.</div>
+      </div>
+
+      <div class="auth-field">
+        <label for="fullname">Full Name <span class="req">*</span></label>
+        <input type="text" id="fullname" name="fullname"
+               value="{{ form.fullname or '' }}"
+               placeholder="e.g. Ahmed Khan" required>
+        <div class="field-error" data-error-for="fullname"></div>
+      </div>
+
+      <div class="auth-field">
+        <label for="email">Email <span class="req">*</span></label>
+        <input type="email" id="email" name="email"
+               value="{{ form.email or '' }}"
+               placeholder="your@email.com" required>
+        <div class="field-error" data-error-for="email"></div>
+      </div>
+
+      <div class="auth-field">
+        <label for="password">Password <span class="req">*</span></label>
+        <input type="password" id="password" name="password"
+               placeholder="At least 8 characters" required minlength="8"
+               autocomplete="new-password">
+        <div class="field-error" data-error-for="password"></div>
+        <div class="pw-meter" id="pwMeter" style="display:none;">
+          <div class="pw-meter-track"><div class="pw-meter-bar" id="pwMeterBar"></div></div>
+          <div class="pw-meter-text" id="pwMeterText"></div>
+        </div>
+        <div class="hint">Must mix letters and numbers, no spaces.</div>
+      </div>
+
+      <div class="auth-field">
+        <label for="confirm_password">Confirm Password <span class="req">*</span></label>
+        <input type="password" id="confirm_password" name="confirm_password"
+               placeholder="Re-enter your password" required minlength="8"
+               autocomplete="new-password">
+        <div class="field-error" data-error-for="confirm_password"></div>
+      </div>
+
+      <button type="submit" class="auth-btn" id="registerBtn">Create Account</button>
+    </form>
+
+    <div class="auth-divider">Already registered</div>
+
+    <div class="auth-links">
+      <span class="muted">Have an account?</span>
+      <a href="{{ url_for('login') }}">Sign in</a>
+    </div>
+
+    <div class="auth-note">
+      Accounts created here receive the <strong>Patient</strong> role.
+      Administrator access is granted by an existing administrator.
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+{% endblock %}

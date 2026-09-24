@@ -1,0 +1,119 @@
+{% import "_icons.html" as icons %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Heart Disease Prediction{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/heart_bg.png') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+
+<body class="{% if current_user %}has-sidebar{% else %}no-sidebar{% endif %} {% block body_class %}{% endblock %}">
+
+{% if current_user %}
+  <!-- Mobile menu button + backdrop (behaviour lives in main.js) -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- Sidebar navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">{{ icons.icon('heart') }}</div>
+      <div class="brand-text">
+        <div class="brand-name">Heart Disease Prediction</div>
+        <div class="brand-tag">Flask + Machine Learning</div>
+      </div>
+    </div>
+
+    <a href="{{ url_for('profile') }}" class="user-card">
+      <div class="user-avatar user-avatar-emoji">
+        {%- if current_user.role == ROLE_ADMIN -%}{{ icons.icon('shield') }}{%- else -%}{{ icons.icon('user') }}{%- endif -%}
+      </div>
+      <div class="user-info">
+        <div class="user-name">{{ current_user.fullname or current_user.username }}</div>
+        <div class="user-role">{{ current_user.role }}</div>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-section">Overview</div>
+        <a href="{{ url_for('dashboard') }}"
+           class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+          {{ icons.icon('dashboard') }}<span>Dashboard</span></a>
+        <a href="{{ url_for('diagnosis_form') }}"
+           class="nav-link {% if request.endpoint == 'diagnosis_form' %}active{% endif %}">
+          {{ icons.icon('pulse') }}<span>New Assessment</span></a>
+        <a href="{{ url_for('history') }}"
+           class="nav-link {% if request.endpoint == 'history' %}active{% endif %}">
+          {{ icons.icon('history') }}<span>My History</span></a>
+      </div>
+
+      {% if current_user.role == ROLE_ADMIN %}
+      <div class="nav-group">
+        <div class="nav-section">Administration</div>
+        <a href="{{ url_for('admin_users') }}"
+           class="nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}">
+          {{ icons.icon('users') }}<span>Users</span></a>
+        <a href="{{ url_for('admin_predictions') }}"
+           class="nav-link {% if request.endpoint == 'admin_predictions' %}active{% endif %}">
+          {{ icons.icon('clipboard') }}<span>All Predictions</span></a>
+        <a href="{{ url_for('admin_models') }}"
+           class="nav-link {% if request.endpoint == 'admin_models' %}active{% endif %}">
+          {{ icons.icon('chart') }}<span>Model Performance</span></a>
+      </div>
+      {% endif %}
+
+      <div class="nav-group">
+        <div class="nav-section">Account</div>
+        <a href="{{ url_for('profile') }}"
+           class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">
+          {{ icons.icon('user') }}<span>Profile</span></a>
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <a href="{{ url_for('logout') }}" class="signout-link">
+        {{ icons.icon('logout') }}<span>Sign Out</span></a>
+      <div class="version">Heart Disease Prediction &middot; FYP 2026</div>
+    </div>
+  </aside>
+{% endif %}
+
+<!-- Main content -->
+<main class="main">
+  <div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack" id="flashStack">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+              <span>{{ message }}</span>
+              <button class="flash-close" aria-label="Dismiss">&times;</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="disclaimer">
+      <strong>Screening tool &mdash; not a medical diagnosis.</strong>
+      This application estimates cardiovascular risk from statistical patterns
+      in population data and can be wrong. Always consult a qualified doctor
+      before acting on any result.
+    </footer>
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

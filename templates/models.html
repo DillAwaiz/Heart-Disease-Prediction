@@ -1,0 +1,115 @@
+{% import "_icons.html" as icons %}
+{% extends "base.html" %}
+{% block title %}Model Performance &mdash; Heart Disease Prediction{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ icons.icon('chart', 'title-icon') }}Model Performance</h1>
+<p class="page-subtitle">
+  {% if trained_at %}Last trained {{ trained_at }}.{% endif %}
+  {% if rows_used %}Evaluated on {{ rows_used }} patient records.{% endif %}
+</p>
+<hr class="divider">
+
+{% if not rows %}
+  <div class="alert alert-warning">
+    No results found. Run <code>python train_model.py</code> first.
+  </div>
+{% else %}
+
+  <!-- Model comparison table -->
+  <div class="panel">
+    <div class="panel-title">Model Comparison (held-out test set, 20% of the data)</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th><th class="num">Accuracy</th><th class="num">Precision</th>
+            <th class="num">Recall</th><th class="num">F1</th><th class="num">ROC AUC</th>
+            <th class="num">CV AUC (5-fold)</th><th class="num">Train Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              <td>
+                <strong>{{ r.name }}</strong>
+                {% if r.name == best %}<span class="badge badge-green">Selected</span>{% endif %}
+              </td>
+              <td class="num">{{ '%.1f'|format(r.accuracy * 100) }}%</td>
+              <td class="num">{{ '%.3f'|format(r.precision) }}</td>
+              <td class="num">{{ '%.3f'|format(r.recall) }}</td>
+              <td class="num">{{ '%.3f'|format(r.f1) }}</td>
+              <td class="num">{{ '%.4f'|format(r.roc_auc) }}</td>
+              <td class="num">{{ '%.4f'|format(r.cv_auc) }} ± {{ '%.4f'|format(r.cv_auc_std) }}</td>
+              <td class="num text-sm">{{ r.train_seconds }}s</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="text-sm text-muted mt-1">
+      The <strong>selected</strong> model had the best ROC AUC, and it is part
+      of the ensemble the web application uses for every prediction. When two
+      models tie on test ROC AUC, the better cross-validation AUC decides.
+    </div>
+  </div>
+
+  <div class="grid grid-2">
+    <!-- Confusion matrix of the selected model -->
+    <div class="panel">
+      <div class="panel-title">Confusion Matrix &mdash; {{ best_row.name }}</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th></th><th>Predicted Low</th><th>Predicted High</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Actually Low</strong></td>
+              <td class="num">{{ best_row.confusion_matrix[0][0] }} (TN)</td>
+              <td class="num">{{ best_row.confusion_matrix[0][1] }} (FP)</td>
+            </tr>
+            <tr>
+              <td><strong>Actually High</strong></td>
+              <td class="num">{{ best_row.confusion_matrix[1][0] }} (FN)</td>
+              <td class="num">{{ best_row.confusion_matrix[1][1] }} (TP)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="text-sm text-muted mt-1">
+        Rows are the true outcomes, columns are the model's predictions
+        at the 50% decision threshold.
+      </div>
+    </div>
+
+    <!-- Feature importance of the selected model -->
+    <div class="panel">
+      <div class="panel-title">Feature Importance &mdash; {{ best_row.name }}</div>
+      {% if importances %}
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              {% for row in importances %}
+                <tr>
+                  <td class="text-sm">{{ row.feature }}</td>
+                  <td style="width:55%;">
+                    <div style="background:#f3f4f6; height:10px; border-radius:5px;">
+                      <div data-bar-width="{{ '%.1f'|format(row.importance * 100) }}"
+                           style="background:#ef4444; height:10px; border-radius:5px; width:0;"></div>
+                    </div>
+                  </td>
+                  <td class="num text-sm">{{ '%.1f'|format(row.importance * 100) }}%</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-muted text-sm">This model does not expose feature importances.</div>
+      {% endif %}
+    </div>
+  </div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,90 @@
+{
+    "trained_at": "2026-09-24 22:27:35",
+    "dataset": "heart.csv",
+    "rows_used": 68645,
+    "features": [
+        "age",
+        "gender",
+        "height",
+        "weight",
+        "ap_hi",
+        "ap_lo",
+        "cholesterol",
+        "gluc",
+        "smoke",
+        "alco",
+        "active",
+        "bmi",
+        "pulse_pressure"
+    ],
+    "threshold": 0.5,
+    "best_model": "Random Forest",
+    "models": {
+        "Logistic Regression": {
+            "accuracy": 0.7269,
+            "precision": 0.748,
+            "recall": 0.6754,
+            "f1": 0.7098,
+            "roc_auc": 0.7924,
+            "confusion_matrix": [
+                [
+                    5392,
+                    1545
+                ],
+                [
+                    2205,
+                    4587
+                ]
+            ],
+            "train_seconds": 0.11,
+            "cv_accuracy": 0.7282,
+            "cv_accuracy_std": 0.0018,
+            "cv_auc": 0.7909,
+            "cv_auc_std": 0.004
+        },
+        "Random Forest": {
+            "accuracy": 0.7301,
+            "precision": 0.7522,
+            "recall": 0.6776,
+            "f1": 0.7129,
+            "roc_auc": 0.8,
+            "confusion_matrix": [
+                [
+                    5421,
+                    1516
+                ],
+                [
+                    2190,
+                    4602
+                ]
+            ],
+            "train_seconds": 3.43,
+            "cv_accuracy": 0.7338,
+            "cv_accuracy_std": 0.0034,
+            "cv_auc": 0.7995,
+            "cv_auc_std": 0.0036
+        },
+        "XGBoost": {
+            "accuracy": 0.7322,
+            "precision": 0.7488,
+            "recall": 0.6904,
+            "f1": 0.7184,
+            "roc_auc": 0.7997,
+            "confusion_matrix": [
+                [
+                    5364,
+                    1573
+                ],
+                [
+                    2103,
+                    4689
+                ]
+            ],
+            "train_seconds": 1.68,
+            "cv_accuracy": 0.7344,
+            "cv_accuracy_std": 0.0033,
+            "cv_auc": 0.7986,
+            "cv_auc_std": 0.0038
+        }
+    }
+}

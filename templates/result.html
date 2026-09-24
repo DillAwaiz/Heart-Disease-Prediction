@@ -1,0 +1,92 @@
+{% import "_icons.html" as icons %}
+{% extends "base.html" %}
+{% block title %}Prediction Result &mdash; Heart Disease Prediction{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ icons.icon('clipboard', 'title-icon') }}Prediction Result</h1>
+<hr class="divider">
+
+<div class="grid grid-2">
+
+  <!-- The verdict -->
+  <div>
+    <div class="result-card {{ risk.css }}">
+      <div class="result-emoji">{{ icons.icon(risk.icon) }}</div>
+      <div class="result-label">{{ risk.label }}</div>
+      <div class="result-prob">
+        Risk Probability: <strong>{{ '%.1f'|format(outcome.probability * 100) }}%</strong>
+      </div>
+      <div class="result-note">{{ risk.note }}</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Model Predictions</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Model</th><th class="num">Risk Probability</th></tr>
+          </thead>
+          <tbody>
+            {% for name, prob in outcome.votes.items() %}
+              <tr>
+                <td>{{ name }}</td>
+                <td class="num">{{ '%.1f'|format(prob * 100) }}%</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="text-sm text-muted mt-1">
+        The final result is the <strong>average</strong> of these model
+        probabilities ({{ outcome.model_used }}). A probability of 50% or
+        more is shown as &ldquo;High Risk&rdquo;.
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">What You Can Do</div>
+      <ul class="tips">
+        {% for tip in tips %}<li>{{ tip }}</li>{% endfor %}
+      </ul>
+      <div class="text-sm text-muted mt-1">
+        General health information only - not personalised medical advice.
+      </div>
+    </div>
+  </div>
+
+  <!-- The inputs that produced the result -->
+  <div>
+    <div class="panel">
+      <div class="panel-title">Information Used</div>
+      <div class="table-wrap">
+        <table>
+          <tbody>
+            <tr><td>Age</td><td class="num">{{ readable.age }} years</td></tr>
+            <tr><td>Gender</td><td class="num">{{ 'Male' if readable.gender == 1 else 'Female' }}</td></tr>
+            <tr><td>Height</td><td class="num">{{ readable.height }} cm</td></tr>
+            <tr><td>Weight</td><td class="num">{{ readable.weight }} kg</td></tr>
+            <tr><td>BMI</td><td class="num">{{ readable.bmi }} ({{ bmi_category.label }})</td></tr>
+            <tr><td>Systolic BP</td><td class="num">{{ readable.ap_hi }} mmHg</td></tr>
+            <tr><td>Diastolic BP</td><td class="num">{{ readable.ap_lo }} mmHg</td></tr>
+            <tr><td>Pulse Pressure</td><td class="num">{{ readable.pulse_pressure }} mmHg</td></tr>
+            <tr><td>Cholesterol</td><td class="num">{{ level_labels.get(readable.cholesterol) }}</td></tr>
+            <tr><td>Glucose</td><td class="num">{{ level_labels.get(readable.gluc) }}</td></tr>
+            <tr><td>Smoker</td><td class="num">{{ 'Yes' if readable.smoke else 'No' }}</td></tr>
+            <tr><td>Alcohol Use</td><td class="num">{{ 'Yes' if readable.alco else 'No' }}</td></tr>
+            <tr><td>Physically Active</td><td class="num">{{ 'Yes' if readable.active else 'No' }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      {% if saved_id %}
+        <a href="{{ url_for('report_pdf', pred_id=saved_id) }}" class="btn">Download Report (PDF)</a>
+        <a href="{{ url_for('report', pred_id=saved_id) }}" class="btn btn-grey">Download Report (.txt)</a>
+      {% endif %}
+      <a href="{{ url_for('diagnosis_form') }}" class="btn btn-grey">New Assessment</a>
+      <a href="{{ url_for('history') }}" class="btn btn-grey">View History</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
