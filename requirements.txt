@@ -1,17 +1,12 @@
-# Heart Disease Prediction - Python dependencies
-# Install everything with:  pip install -r requirements.txt
-#
-# These are the exact versions the project was developed and tested with.
-# scikit-learn is pinned because the saved .pkl model files were created
-# with this version and a different one may refuse to load them.
+# Heart Disease Prediction - runtime dependencies
+# Used by Flask and Vercel. Training-only packages are in
+# requirements-train.txt so serverless deployments stay below Vercel's
+# function bundle limit.
 
 # --- Web framework ---
 Flask==3.1.2
 
-# --- Data handling ---
-pandas==2.3.3
 numpy==2.4.2
 
-# --- Machine learning ---
+# --- Saved model loading and prediction ---
 scikit-learn==1.9.0
-xgboost==3.4.0
