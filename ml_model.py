@@ -24,6 +24,8 @@ import os
 import json
 import pickle
 
+import numpy as np
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
@@ -47,6 +49,15 @@ MODEL_FILES = {
     "Random Forest": "random_forest.pkl",
     "XGBoost": "xgboost.pkl",
 }
+
+# XGBoost is required for local training, but is excluded from the Vercel
+# runtime so the serverless function does not install the training stack.
+RUNTIME_MODEL_FILES = (
+    {name: filename for name, filename in MODEL_FILES.items()
+     if name != "XGBoost"}
+    if os.environ.get("VERCEL")
+    else MODEL_FILES.copy()
+)
 
 # Labels for the 1-3 clinical scale used by cholesterol and glucose
 LEVEL_LABELS = {1: "Normal", 2: "Above Normal", 3: "Well Above Normal"}
@@ -86,7 +97,7 @@ def init():
         return
 
     # -- all the trained models --
-    for name, filename in MODEL_FILES.items():
+    for name, filename in RUNTIME_MODEL_FILES.items():
         try:
             with open(os.path.join(MODELS_DIR, filename), "rb") as f:
                 _models[name] = pickle.load(f)
@@ -291,10 +302,7 @@ def predict(vector):
     if not is_ready():
         raise RuntimeError("No trained model available. Run: python train_model.py")
 
-    # Feed a named DataFrame so scikit-learn does not warn about names
-    import pandas as pd
-    frame = pd.DataFrame([vector], columns=get_feature_names())
-    scaled = _scaler.transform(frame)
+    scaled = _scaler.transform(np.asarray([vector], dtype=float))
 
     votes = {}
     for name, model in _models.items():

@@ -64,7 +64,8 @@ save scaler + models + results.json       result page + saved to SQLite
 ## Requirements
 
 - Python 3.10 or newer (developed on 3.13)
-- The packages in `requirements.txt`: Flask, pandas, numpy, scikit-learn, xgboost
+- The packages in `requirements.txt`: Flask, numpy, and scikit-learn
+- For local model training, also install `requirements-train.txt` (pandas and xgboost)
 
 ## Install and run
 
@@ -78,7 +79,7 @@ python -m venv .venv
 # source .venv/bin/activate     # macOS / Linux
 
 # 3. install the dependencies
-pip install -r requirements.txt
+pip install -r requirements-train.txt
 
 # 4. train the models (about 1 minute — needed once)
 python train_model.py

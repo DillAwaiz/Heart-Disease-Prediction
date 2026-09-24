@@ -1,0 +1,4 @@
+# Use this file when training models locally.
+-r requirements.txt
+pandas==2.3.3
+xgboost==3.4.0
