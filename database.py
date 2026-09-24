@@ -22,9 +22,13 @@ import json
 import sqlite3
 import hashlib
 import secrets
+import tempfile
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "heart_disease.db")
+# Vercel's deployed filesystem is read-only. /tmp is writable there, but it
+# is ephemeral, so production deployments should use an external database.
+DB_DIR = tempfile.gettempdir() if os.environ.get("VERCEL") else BASE_DIR
+DB_PATH = os.path.join(DB_DIR, "heart_disease.db")
 
 # 260,000 rounds makes brute-force password guessing very slow
 PBKDF2_ITERATIONS = 260000
